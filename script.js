@@ -1,0 +1,1 @@
+document.getElementById('leadForm').addEventListener('submit', function(e){e.preventDefault();this.innerHTML='<div class="success"><span>✓</span><h3>Request received.</h3><p>Your form is working. Connect it to Formspree, HubSpot, GoHighLevel, or another CRM before launch.</p></div>';});
