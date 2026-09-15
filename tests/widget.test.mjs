@@ -13,13 +13,14 @@ const query=(table)=>{
  let mode='read',payload,filters=[],take;
  const q={
   select(){return q},insert(v){mode='insert';payload=v;return q},update(v){mode='update';payload=v;return q},
-  eq(k,v){filters.push(r=>r[k]===v);return q},neq(k,v){filters.push(r=>r[k]!==v);return q},
+  in(k,v){filters.push(r=>v.includes(r[k]));return q},eq(k,v){filters.push(r=>r[k]===v);return q},neq(k,v){filters.push(r=>r[k]!==v);return q},
   order(){return q},limit(n){take=n;return q},maybeSingle(){return run(true)},single(){return run(true)},
   then(resolve,reject){return run(false).then(resolve,reject)}
  };
  async function run(single){
   let rows=tables[table].filter(r=>filters.every(f=>f(r)));
   if(mode==='insert'){
+   if(table==='messages'&&tables[table].some(r=>r.conversation_id===payload.conversation_id&&r.sender_type===payload.sender_type&&r.client_request_id===payload.client_request_id))return {data:null,error:{code:'23505'}};
    if(table==='messages'&&!['visitor','assistant','agent','system'].includes(payload.sender_type))return {data:null,error:{code:'23514'}};
    const row={id:crypto.randomUUID(),...payload};tables[table].push(row);rows=[row];
   }
@@ -30,6 +31,7 @@ const query=(table)=>{
  return q;
 };
 globalThis.__testDb={from:query,rpc:async(name,args)=>{
+ if(name==='widget_complete_reply'){const c=tables.conversations.find(c=>c.id===args.p_conversation_id);if(!c?.ai_enabled)return {data:false,error:null};tables.messages.push({id:crypto.randomUUID(),organization_id:args.p_organization_id,conversation_id:c.id,sender_type:'assistant',client_request_id:args.p_request_id,content:args.p_content});return {data:true,error:null};}
  assert.equal(name,'match_knowledge_service');rpcArgs=args;
  return {data:noMatch?[]:[{content:'Verified fee is 47 dollars.',source_name:'Reference'}],error:null};
 }};
@@ -47,8 +49,8 @@ function setup(){
  };
 }
 async function send(body,origin='https://example.test'){
- const res=await handler(new Request('https://test/functions/widget-chat',{method:'POST',headers:{'Content-Type':'application/json',Origin:origin},body:JSON.stringify({widget_key:'widget-a',...body})}));
- return {status:res.status,...await res.json()};
+ const res=await handler(new Request('https://test/functions/widget-chat',{method:'POST',headers:{'Content-Type':'application/json',Origin:origin},body:JSON.stringify({widget_key:'widget-a',session_token:'a'.repeat(64),request_id:crypto.randomUUID(),...body})}));
+ return {...await res.json(),status:res.status};
 }
 test('retrieved chunks only, tenant scope, history, current message once and lead capture',async()=>{
  setup();
@@ -77,8 +79,25 @@ test('handoff persists AI shutoff and later messages without generating an answe
  assert.equal(tables.messages.filter(m=>m.sender_type==='assistant').length,1);
 });
 test('cross-assistant conversation and disallowed origin rejected before writing',async()=>{
- setup();tables.conversations.push({id:'other',organization_id:'org-a',assistant_id:'assistant-b',ai_enabled:true});
- assert.equal((await send({message:'hello',conversation_id:'other'})).status,404);
+ setup();tables.conversations.push({id:'00000000-0000-4000-8000-000000000002',organization_id:'org-a',assistant_id:'assistant-b',ai_enabled:true});
+ assert.equal((await send({message:'hello',conversation_id:'00000000-0000-4000-8000-000000000002'})).status,403);
  assert.equal((await send({message:'hello'},'https://wrong.test')).status,403);assert.equal(tables.messages.length,0);
 });
 
+
+test('config excludes private prompts and history requires a matching session token',async()=>{
+ setup();
+ const config=await send({action:'config'});
+ assert.equal(config.status,200);assert.ok(!('system_prompt' in config.assistant));
+ const first=await send({message:'Hello'});
+ const restored=await send({action:'history',conversation_id:first.conversation_id});
+ assert.equal(restored.status,200);assert.equal(restored.messages.length,2);
+ const denied=await send({action:'history',conversation_id:first.conversation_id,session_token:'b'.repeat(64)});
+ assert.equal(denied.status,403);
+});
+test('duplicate request IDs do not save or generate a second reply',async()=>{
+ setup();const id=crypto.randomUUID();
+ const first=await send({message:'Hello',request_id:id});
+ const second=await send({message:'Hello',request_id:id,conversation_id:first.conversation_id});
+ assert.equal(second.replayed,true);assert.equal(tables.messages.length,2);
+});
