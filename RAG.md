@@ -43,14 +43,17 @@ tests/rag-transaction.sql runs in a transaction and rolls back all fixtures. It 
 administrator as a test principal. It verifies atomic rollback, replacement, stale tokens, duplicate claims,
 unauthorized claims, and organization/assistant/null-filter isolation.
 
-Live verification on 2026-09-15:
-- Unauthenticated knowledge-ingest returned 401.
-- Authenticated temporary organization admin reached ingestion.
-- Missing OPENAI_API_KEY produced 503 and a persisted failed status without chunks.
-- A successful real embedding/Responses round trip remains unverified until that secret is configured.
-- Additional live fallback/isolation checks were not run because the execution approval was declined.
-- Eight local unit/integration tests and database transaction assertions passed.
-- Temporary test accounts, organizations, assistants, and sources were removed after testing.
+Live verification on 2026-09-15 completed successfully after configuring the API key and billing:
+- Unauthenticated ingestion returned 401.
+- Authenticated ingestion produced a ready source with one 1536-dimensional chunk.
+- Reingestion replaced the chunk without duplicates.
+- Live Responses API gpt-5.6-luna returned the exact $47 fee and cobalt-lantern-731 phrase from retrieved knowledge.
+- Lead capture persisted one lead, and visitor/assistant messages persisted using the production schema values.
+- Human handoff disabled AI; the following message received the human-queue response without another AI message.
+- Cross-organization and invalid-assistant retrieval returned zero rows.
+- Eight local regression tests passed, including enforcement of the production message sender constraint.
+- Temporary verification accounts, organizations, conversations, leads, and knowledge sources were cleaned up.
+- Existing project-wide advisor findings below remain outside this phase.
 
 ## Deployment
 supabase/rag.sql is the exact applied production_rag_ingestion migration SQL.

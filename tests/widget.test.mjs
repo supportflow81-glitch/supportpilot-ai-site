@@ -1,4 +1,3 @@
-
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -20,7 +19,10 @@ const query=(table)=>{
  };
  async function run(single){
   let rows=tables[table].filter(r=>filters.every(f=>f(r)));
-  if(mode==='insert'){const row={id:crypto.randomUUID(),...payload};tables[table].push(row);rows=[row];}
+  if(mode==='insert'){
+   if(table==='messages'&&!['visitor','assistant','agent','system'].includes(payload.sender_type))return {data:null,error:{code:'23514'}};
+   const row={id:crypto.randomUUID(),...payload};tables[table].push(row);rows=[row];
+  }
   if(mode==='update')rows.forEach(r=>Object.assign(r,payload));
   if(take)rows=rows.slice(-take).reverse();
   return {data:single?rows[0]||null:rows.map(r=>({...r})),error:null};
@@ -72,10 +74,11 @@ test('handoff persists AI shutoff and later messages without generating an answe
  assert.equal(first.handoff,true);assert.equal(tables.conversations[0].ai_enabled,false);
  const held=await send({message:'What is the fee?',conversation_id:first.conversation_id});
  assert.equal(held.model,null);assert.match(held.reply,/human teammate/);assert.equal(responseBody,null);
- assert.equal(tables.messages.filter(m=>m.sender_type==='ai').length,1);
+ assert.equal(tables.messages.filter(m=>m.sender_type==='assistant').length,1);
 });
 test('cross-assistant conversation and disallowed origin rejected before writing',async()=>{
  setup();tables.conversations.push({id:'other',organization_id:'org-a',assistant_id:'assistant-b',ai_enabled:true});
  assert.equal((await send({message:'hello',conversation_id:'other'})).status,404);
  assert.equal((await send({message:'hello'},'https://wrong.test')).status,403);assert.equal(tables.messages.length,0);
 });
+
