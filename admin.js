@@ -23,7 +23,7 @@ async function openConversation(id){state.selectedConversationId=id;renderThread
 function renderLeads(){$('#leadsTable').innerHTML=`<table class="table"><thead><tr><th>Lead</th><th>Client</th><th>Contact</th><th>Status</th><th>Notes</th><th>Created</th></tr></thead><tbody>${state.leads.map(l=>`<tr><td><b>${esc(l.name||'Unnamed')}</b></td><td>${esc(orgName(l.organization_id))}</td><td>${esc(l.email||l.phone||'—')}</td><td><select data-lead-status="${l.id}">${['new','contacted','qualified','won','lost'].map(s=>`<option value="${s}" ${l.status===s?'selected':''}>${s[0].toUpperCase()+s.slice(1)}</option>`).join('')}</select></td><td>${esc(l.notes||'—')}</td><td>${fmt(l.created_at)}</td></tr>`).join('')}</tbody></table>`;$$('[data-lead-status]').forEach(sel=>sel.onchange=async()=>{const {error}=await db.from('leads').update({status:sel.value,updated_at:new Date().toISOString()}).eq('id',sel.dataset.leadStatus);if(error)return fail('Could not update lead',error);toast('Lead status updated');await loadAll()})}
 function renderAssistants(){
  if(document.activeElement?.closest('.widget-settings'))return;
- const snippet=a=>'<script src="https://supportflow81-glitch.github.io/supportpilot-ai-site/widget.js?v=3.3" data-widget-key="'+a.widget_key+'" defer></script>';
+ const snippet=a=>'<script src="https://supportflow81-glitch.github.io/supportpilot-ai-site/widget.js?v=3.4" data-widget-key="'+a.widget_key+'" defer></script>';
  $('#assistantGrid').innerHTML=state.assistants.map(a=>`<article class="assistantCard"><div class="assistantCardTop"><span class="assistantIcon">◆</span><span class="pill">${esc(a.status)}</span></div><h3>${esc(a.name)}</h3><p>${esc(orgName(a.organization_id))}</p>
  <button class="secondaryBtn" data-toggle-assistant="${a.id}" data-status="${esc(a.status)}">${a.status==='active'?'Pause':'Activate'}</button>
  <details style="margin-top:18px"><summary>Branding & installation</summary>
@@ -97,3 +97,4 @@ $('#downloadLeads').onclick=()=>{const rows=[['Name','Email','Phone','Client','S
 $('#globalSearch').oninput=e=>{const q=e.target.value.trim().toLowerCase();if(q.length<2)return;const hit=state.organizations.find(o=>o.name.toLowerCase().includes(q))||state.leads.find(l=>`${l.name||''} ${l.email||''}`.toLowerCase().includes(q))||state.conversations.find(c=>`${c.visitor_name||''} ${c.visitor_email||''}`.toLowerCase().includes(q));if(hit)toast(`Found: ${hit.name||hit.visitor_name||hit.email||hit.visitor_email||'record'}`)};
 db.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')showLogin()});requireAdmin();
 })();
+

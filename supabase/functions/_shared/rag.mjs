@@ -1,6 +1,26 @@
-
 export const EMBEDDING_MODEL = 'text-embedding-3-small';
 export const DIMENSIONS = 1536;
+export async function boundedBody(req, maximum) {
+  const reader = req.body?.getReader();
+  if (!reader) return '';
+  let size = 0, text = ''; const decoder = new TextDecoder();
+  try {
+    for (;;) {
+      const {value, done} = await reader.read();
+      if (done) return text + decoder.decode();
+      size += value.byteLength;
+      if (size > maximum) { await reader.cancel(); throw new RangeError('Request too large'); }
+      text += decoder.decode(value, {stream:true});
+    }
+  } finally { reader.releaseLock(); }
+}
+export async function launchLimit(db, organization, action, subject) {
+  const {data,error} = await db.rpc('consume_launch_limit', {
+    p_organization_id:organization,p_action:action,p_subject:subject
+  });
+  if (error || typeof data?.allowed !== 'boolean') throw new Error('Limit service unavailable');
+  return data;
+}
 export function chunkText(raw) {
   if (typeof raw !== 'string' || !raw.trim()) throw new Error('Add text before processing. URLs and files need extracted text.');
   if (raw.length > 200000) throw new Error('Source is too large. Split it into sources under 200,000 characters.');
@@ -55,3 +75,4 @@ export async function embedTexts(texts, apiKey) {
   }
   return vectors;
 }
+

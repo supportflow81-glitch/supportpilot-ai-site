@@ -8,7 +8,7 @@ let source=fs.readFileSync(url,'utf8')
  .replace("'../_shared/rag.mjs'",JSON.stringify(new URL('../supabase/functions/_shared/rag.mjs',import.meta.url).href))
  .replace(/const db=createClient[^\n]+/,'const db=globalThis.__testDb;');
 source=stripTypeScriptTypes(source);
-let handler;let tables;let responseBody;let rpcArgs;let outage=false;let noMatch=false;
+let handler;let tables;let responseBody;let rpcArgs;let limited=false;let limitOutage=false;let outage=false;let noMatch=false;
 const query=(table)=>{
  let mode='read',payload,filters=[],take;
  const q={
@@ -31,6 +31,7 @@ const query=(table)=>{
  return q;
 };
 globalThis.__testDb={from:query,rpc:async(name,args)=>{
+ if(name==='consume_launch_limit')return {data:{allowed:!limited,retry_after:42},error:limitOutage?{code:'unavailable'}:null};
  if(name==='widget_complete_reply'){const c=tables.conversations.find(c=>c.id===args.p_conversation_id);if(!c?.ai_enabled)return {data:false,error:null};tables.messages.push({id:crypto.randomUUID(),organization_id:args.p_organization_id,conversation_id:c.id,sender_type:'assistant',client_request_id:args.p_request_id,content:args.p_content});return {data:true,error:null};}
  assert.equal(name,'match_knowledge_service');rpcArgs=args;
  return {data:noMatch?[]:[{content:'Verified fee is 47 dollars.',source_name:'Reference'}],error:null};
@@ -39,7 +40,7 @@ globalThis.Deno={env:{get:()=> 'test-key'},serve(fn){handler=fn;}};
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 function setup(){
  tables={assistants:[{id:'assistant-a',organization_id:'org-a',widget_key:'widget-a',name:'Test',status:'active',allowed_origins:['https://example.test']}],conversations:[],messages:[],leads:[]};
- responseBody=null;rpcArgs=null;outage=false;noMatch=false;
+ responseBody=null;rpcArgs=null;limited=false;limitOutage=false;outage=false;noMatch=false;
  globalThis.fetch=async(url,opts)=>{
   if(outage)throw new Error('Service unavailable');
   const body=JSON.parse(opts.body);
@@ -101,3 +102,17 @@ test('duplicate request IDs do not save or generate a second reply',async()=>{
  const second=await send({message:'Hello',request_id:id,conversation_id:first.conversation_id});
  assert.equal(second.replayed,true);assert.equal(tables.messages.length,2);
 });
+
+test('rate limits stop writes and AI; limit outages fail closed',async()=>{
+ setup();limited=true;
+ const r=await send({message:'What is the fee?'});
+ assert.equal(r.status,429);assert.equal(r.retry_after,42);assert.equal(tables.messages.length,0);assert.equal(responseBody,null);
+ setup();limitOutage=true;
+ assert.equal((await send({message:'hello'})).status,500);assert.equal(tables.conversations.length,0);
+});
+test('oversize bodies and non-object JSON fail without database writes',async()=>{
+ setup();assert.equal((await send({message:'x'.repeat(17000)})).status,413);
+ const r=await handler(new Request('https://test',{method:'POST',body:'null'}));assert.equal(r.status,400);
+ assert.equal((await handler(new Request('https://test'))).status,405);assert.equal(tables.messages.length,0);
+});
+

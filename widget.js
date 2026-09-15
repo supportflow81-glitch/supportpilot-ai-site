@@ -76,17 +76,19 @@ function render(data){
   failed=null;retry.hidden=true;feedback.textContent=aiEnabled?'Message received. Waiting for a reply…':'Message sent to the human support queue.';
  }
 }
+const cooldown={};
 async function request(action,extra={}){
+ if(cooldown[action]>Date.now()){const e=new Error('Chat is busy. Please retry shortly.');e.status=429;e.code='RATE_LIMITED';throw e;}
  const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,widget_key:key,conversation_id:session?.id||null,session_token:session?.token,...extra}),signal:AbortSignal.timeout(45000)});
- const data=await r.json();if(!r.ok){const e=new Error(data.error||'Chat unavailable');e.code=data.code;e.status=r.status;throw e;}return data;
+ const data=await r.json();if(r.status===429)cooldown[action]=Date.now()+Math.max(1,Math.min(86400,Number(data.retry_after)||60))*1000;if(!r.ok){const e=new Error(data.error||'Chat unavailable');e.code=data.code;e.status=r.status;throw e;}return data;
 }
 function showError(e){
- feedback.textContent=e.code==='SESSION_INVALID'?'This chat session expired. Start a new chat.':e.status===403?'Chat is not available on this website.':e.status===404?'This assistant is unavailable.':'Connection interrupted. Your message is kept; retry when connected.';
+ feedback.textContent=e.status===429?'Chat is busy. Your message is kept. Please retry after the wait period.':e.code==='SESSION_INVALID'?'This chat session expired. Start a new chat.':e.status===403?'Chat is not available on this website.':e.status===404?'This assistant is unavailable.':'Connection interrupted. Your message is kept; retry when connected.';
  retry.hidden=e.code==='SESSION_INVALID';retry.textContent=failed?'Retry sending':'Reconnect';
 }
 function setBusy(value){busy=value;send.disabled=value;input.disabled=value;$('#sl-new').disabled=value;$('#sl-refresh').disabled=value;retry.disabled=value;}
 async function sync(){
- if(!opened||busy||document.hidden)return;
+ if(!opened||busy||document.hidden||cooldown.history>Date.now())return;
  const version=epoch;
  try{const data=await request('history');if(version!==epoch)return;render(data);if(!failed)feedback.textContent=aiEnabled?'':'A human teammate can reply here. Response times may vary.';}
  catch(e){if(version===epoch)showError(e);}
@@ -126,3 +128,4 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&opened)sy
 window.addEventListener('online',()=>{if(opened)sync();});
 request('config').then(data=>configure(data.assistant)).catch(()=>{});
 })();
+

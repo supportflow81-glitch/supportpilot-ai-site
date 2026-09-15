@@ -12,7 +12,7 @@
 
 ## Deployment
 Apply supabase/widget-lifecycle.sql once through migration history, deploy widget-chat with _shared/rag.mjs, and publish widget.js/admin.js/demo.html/admin.html.
-The demo page and installation snippets use widget.js?v=3.3 to refresh cached browser assets.
+The demo page and installation snippets use widget.js?v=3.4 to refresh cached browser assets.
 No change to the OpenAI model or ingestion configuration is required.
 
 ## Verification
@@ -21,4 +21,4 @@ Regression tests: node --test tests/rag.test.mjs tests/widget.test.mjs
 Supabase security/performance advisors were run after the schema change. Existing project-wide findings remain, including public vector extension, authenticated security-definer helpers, disabled leaked-password protection, duplicate indexes/policies, and unindexed foreign keys. The new completion function uses SECURITY INVOKER with service-role-only execution.
 
 ## Limits
-Sessions are per tab (not cross-device). Only the latest 100 messages are displayed. Website code on the host page can access the same browser storage, so host-site XSS protection remains important. Rate limiting and broader abuse hardening remain a separate launch task.
+Sessions are per tab (not cross-device). Only the latest 100 messages are displayed. Website code on the host page can access the same browser storage, so host-site XSS protection remains important. Launch limits and diagnostic logging are documented in LAUNCH.md.
