@@ -36,6 +36,8 @@ No chat text or credentials are added to diagnostic logs. Logs use Supabase's ex
 
 ## Verification and remaining findings
 
+**Update:** The later [database audit cleanup](AUDIT.md) resolved the database security and performance warnings listed below. Only the Auth leaked-password setting remains pending; the following records the original launch audit.
+
 12 Node tests passed, including RAG, history, handoff, replay, oversized/invalid requests, rate-limit rejection, and limiter outage. Live concurrent message tests accepted 10 requests and rejected the eleventh with HTTP 429; rejected messages were not persisted. Config, history, human handoff, and unauthenticated ingestion rejection passed. Database checks verified limit enforcement and service-only function grants. Temporary live-test data was deleted.
 
 Security advisors after migration: authenticated SECURITY DEFINER warnings reduced from 8 to 6. The remaining functions are authorization helpers used by existing RLS policies. The vector extension remains in public; moving it requires updating existing vector type/operator references. Leaked-password protection remains disabled and requires Supabase Auth configuration. Four RLS-without-policy notices concern backend-only tables, including the new private counters; browser access remains denied.
