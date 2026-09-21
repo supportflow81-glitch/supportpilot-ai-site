@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ServeLink AI Admin</title>
+  <title>Serve Link Agency Admin</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
   <section class="authGate" id="authGate">
     <div class="authCard">
-      <div class="authBrand"><span class="brandmark">SL</span><div><b>ServeLink AI</b><small>Administration</small></div></div>
+      <div class="authBrand"><span class="brandmark">SL</span><div><b>Serve Link Agency</b><small>Administration</small></div></div>
       <p class="eyebrow">SECURE ADMIN ACCESS</p>
-      <h1>Sign in to ServeLink.</h1>
+      <h1>Sign in to Serve Link Agency.</h1>
       <p>Use your authorized administrator account to continue.</p>
       <form id="loginForm">
         <label>Email<input id="loginEmail" type="email" autocomplete="email" required placeholder="admin@example.com"></label>
@@ -27,8 +27,8 @@
   <div class="appShell hidden" id="appShell">
     <div class="mobileShade" id="mobileShade"></div>
     <aside class="sidebar" id="sidebar">
-      <a class="brand" href="index.html"><span class="brandmark">SL</span><span>ServeLink <b>AI</b></span></a>
-      <div class="workspace"><span class="workspaceLogo">SL</span><div><b>ServeLink AI</b><small>Admin workspace</small></div></div>
+      <a class="brand" href="index.html"><span class="brandmark">SL</span><span>Serve Link <b>Agency</b></span></a>
+      <div class="workspace"><span class="workspaceLogo">SL</span><div><b>Serve Link Agency</b><small>Admin workspace</small></div></div>
       <nav class="sideNav" aria-label="Admin navigation">
         <button class="navItem active" data-view="overview"><span>⌂</span>Overview</button>
         <button class="navItem" data-view="clients"><span>▦</span>Clients <em id="clientNavCount">0</em></button>
@@ -53,7 +53,7 @@
       </header>
 
       <section class="view active" id="overview">
-        <div class="pageHead"><div><p class="eyebrow">ADMIN DASHBOARD</p><h1 id="welcomeTitle">Welcome.</h1><p>Your authenticated ServeLink administration workspace.</p></div><div class="headActions"><button class="secondaryBtn" id="refreshBtn">↻ Refresh</button><button class="primaryBtn" data-modal="clientModal">＋ Add client</button></div></div>
+        <div class="pageHead"><div><p class="eyebrow">ADMIN DASHBOARD</p><h1 id="welcomeTitle">Welcome.</h1><p>Your authenticated Serve Link Agency administration workspace.</p></div><div class="headActions"><button class="secondaryBtn" id="refreshBtn">↻ Refresh</button><button class="primaryBtn" data-modal="clientModal">＋ Add client</button></div></div>
         <div class="securityStrip"><div><b>Secure</b><span>Supabase session required</span></div><div><b>Admin</b><span>Role verification enabled</span></div><div><b>RLS</b><span>Database access protected</span></div><div><b>Live</b><span>Realtime dashboard</span></div></div>
         <div class="stats">
           <article><div class="statTop"><span class="statIcon blue">▦</span><small>Live</small></div><h2 id="statClients">0</h2><p>Client organizations</p></article>
@@ -62,17 +62,17 @@
           <article><div class="statTop"><span class="statIcon orange">◆</span><small>Live</small></div><h2 id="statAssistants">0</h2><p>AI assistants</p></article>
         </div>
         <div class="dashboardGrid lower">
-          <article class="panel"><div class="panelHead"><div><h3>Recent clients</h3><p>Newest ServeLink organizations</p></div><button class="textBtn" data-jump="clients">View all →</button></div><div class="clientList" id="clientList"><div class="empty">Loading clients…</div></div></article>
+          <article class="panel"><div class="panelHead"><div><h3>Recent clients</h3><p>Newest Serve Link Agency organizations</p></div><button class="textBtn" data-jump="clients">View all →</button></div><div class="clientList" id="clientList"><div class="empty">Loading clients…</div></div></article>
           <article class="panel"><div class="panelHead"><div><h3>Recent leads</h3><p>Latest opportunities captured</p></div><button class="textBtn" data-jump="leads">View all →</button></div><div class="leadList" id="leadList"><div class="empty">Loading leads…</div></div></article>
         </div>
       </section>
 
       <section class="view" id="clients"><div class="pageHead"><div><p class="eyebrow">CLIENT MANAGEMENT</p><h1>Clients</h1><p>Manage organizations, plans, and account status.</p></div><button class="primaryBtn" data-modal="clientModal">＋ Add client</button></div><div class="panel tablePanel"><div class="dataTable" id="clientsTable"></div></div></section>
       <section class="view" id="conversations"><div class="pageHead"><div><p class="eyebrow">CUSTOMER SUPPORT</p><h1>Conversations</h1><p>Review customer conversations and take over when needed.</p></div></div><div class="inbox"><div class="threadList" id="threadList"></div><div class="conversation" id="conversation"><div class="empty conversationEmpty">Select a conversation.</div></div></div></section>
-      <section class="view" id="leads"><div class="pageHead"><div><p class="eyebrow">SALES PIPELINE</p><h1>Leads</h1><p>Track opportunities collected by ServeLink AI.</p></div><button class="secondaryBtn" id="downloadLeads">⇩ Download CSV</button></div><div class="panel tablePanel"><div class="dataTable" id="leadsTable"></div></div></section>
+      <section class="view" id="leads"><div class="pageHead"><div><p class="eyebrow">SALES PIPELINE</p><h1>Leads</h1><p>Track opportunities collected by Serve Link Agency.</p></div><button class="secondaryBtn" id="downloadLeads">⇩ Download CSV</button></div><div class="panel tablePanel"><div class="dataTable" id="leadsTable"></div></div></section>
       <section class="view" id="chatbots"><div class="pageHead"><div><p class="eyebrow">AI ASSISTANTS</p><h1>AI Assistants</h1><p>Create and control assistants for client organizations.</p></div><button class="primaryBtn" data-modal="assistantModal">＋ New assistant</button></div><div class="assistantGrid" id="assistantGrid"></div></section>
-      <section class="view" id="knowledge"><div class="pageHead"><div><p class="eyebrow">TRAINING CONTENT</p><h1>Knowledge Base</h1><p>Manage the sources used by ServeLink assistants.</p></div><button class="primaryBtn" data-modal="knowledgeModal">＋ Add source</button></div><div class="panel"><div class="docList" id="docList"></div></div></section>
-      <section class="view" id="analytics"><div class="pageHead"><div><p class="eyebrow">REPORTING</p><h1>Analytics</h1><p>Live operational metrics derived from your ServeLink data.</p></div></div><div class="stats analyticsStats"><article><h2 id="analyticsOpen">0</h2><p>Open conversations</p></article><article><h2 id="analyticsQualified">0</h2><p>Qualified / won leads</p></article><article><h2 id="analyticsActiveAI">0</h2><p>Active assistants</p></article><article><h2 id="analyticsKnowledge">0</h2><p>Knowledge sources</p></article></div><div class="panel topicPanel"><h3>Lead distribution</h3><div id="topicBars"></div></div></section>
+      <section class="view" id="knowledge"><div class="pageHead"><div><p class="eyebrow">TRAINING CONTENT</p><h1>Knowledge Base</h1><p>Manage the sources used by Serve Link Agency assistants.</p></div><button class="primaryBtn" data-modal="knowledgeModal">＋ Add source</button></div><div class="panel"><div class="docList" id="docList"></div></div></section>
+      <section class="view" id="analytics"><div class="pageHead"><div><p class="eyebrow">REPORTING</p><h1>Analytics</h1><p>Live operational metrics derived from your Serve Link Agency data.</p></div></div><div class="stats analyticsStats"><article><h2 id="analyticsOpen">0</h2><p>Open conversations</p></article><article><h2 id="analyticsQualified">0</h2><p>Qualified / won leads</p></article><article><h2 id="analyticsActiveAI">0</h2><p>Active assistants</p></article><article><h2 id="analyticsKnowledge">0</h2><p>Knowledge sources</p></article></div><div class="panel topicPanel"><h3>Lead distribution</h3><div id="topicBars"></div></div></section>
       <section class="view" id="settings"><div class="pageHead"><div><p class="eyebrow">WORKSPACE</p><h1>Settings</h1><p>Manage your authenticated administrator profile.</p></div></div><form class="panel settingsForm" id="settingsForm"><h3>Administrator profile</h3><div class="formGrid"><label>Full name<input id="settingsName" required></label><label>Email<input id="settingsEmail" type="email" disabled></label><label>Role<input value="Platform Admin" disabled></label><label>User ID<input id="settingsUserId" disabled></label></div><button class="primaryBtn" type="submit">Save profile</button></form></section>
     </main>
   </div>
@@ -82,6 +82,6 @@
   <div class="modal" id="knowledgeModal"><div class="modalCard"><button class="closeModal">×</button><p class="eyebrow">KNOWLEDGE</p><h2>Add knowledge source</h2><form id="knowledgeForm"><label>Organization<select required id="knowledgeOrg" name="organization_id"></select></label><label>Name<input required name="name" placeholder="Service FAQ"></label><label>Source type<select name="source_type"><option value="text">Text</option><option value="url">URL</option></select></label><label>Source URL (optional)<input name="source_url" type="url" placeholder="https://example.com/faq"></label><label>Knowledge text<textarea required name="raw_text" rows="8" placeholder="Paste the approved business information here..."></textarea></label><button class="primaryBtn fullBtn" type="submit">Add source</button></form></div></div>
   <div class="toast" id="toast"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
-  <script src="admin.js?v=3.4"></script>
+  <script src="admin.js?v=brand-20260921"></script>
 </body>
 </html>

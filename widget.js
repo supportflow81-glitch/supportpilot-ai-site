@@ -39,7 +39,7 @@ root.innerHTML=`<style>
 <div class="sl-contact"><input id="sl-name" maxlength="200" placeholder="Name (optional)" aria-label="Your name (optional)" autocomplete="name"><input id="sl-email" type="email" maxlength="320" placeholder="Email (optional)" aria-label="Your email (optional)" autocomplete="email"></div>
 <form class="sl-form"><input id="sl-input" maxlength="4000" placeholder="Type your message…" aria-label="Message" autocomplete="off" required><button class="sl-send" type="submit">Send</button></form>
 <div id="sl-feedback" role="status"></div><button id="sl-retry" class="sl-link" hidden>Retry</button>
-<div class="sl-brand">Powered by ServeLink AI · Messages are saved by this business.</div></section>
+<div class="sl-brand">Powered by Serve Link Agency · Messages are saved by this business.</div></section>
 <button id="sl-open" aria-label="Open chat" aria-expanded="false">✦</button>`;
 document.body.appendChild(root);
 const $=s=>root.querySelector(s),panel=$('#sl-panel'),launcher=$('#sl-open'),log=$('.sl-msgs'),input=$('#sl-input'),send=$('.sl-send'),feedback=$('#sl-feedback'),retry=$('#sl-retry');
