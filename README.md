@@ -7,7 +7,7 @@ Double-click `index.html` or open it in any browser.
 Upload `index.html`, `styles.css`, and `script.js` to Netlify, Cloudflare Pages, GitHub Pages, or any web host. No build step is required.
 
 ## Before launch
-1. Business email is set to hello@supportpilot.ai.
+1. Business email is set to supportflow81@gmail.com.
 2. Connect the lead form to Formspree, HubSpot, GoHighLevel, or your backend.
 3. Add real Privacy Policy and Terms pages.
 4. Confirm pricing and purchase your domain.
