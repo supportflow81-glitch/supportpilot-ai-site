@@ -25,7 +25,7 @@
    if(!response.ok||data.received!==true)throw new Error(data.error||'Submission not confirmed.');
    const box=document.createElement('div');box.className='success';box.tabIndex=-1;
    const title=document.createElement('h3');title.textContent='Enquiry received.';
-   const detail=document.createElement('p');detail.textContent='Your details have been saved for Serve Link Agency to follow up. This does not reserve a pilot place or confirm an appointment.';
+   const detail=document.createElement('p');detail.textContent='Your details have been saved for Serve Link Agency to follow up. Human support is available Monday–Friday, 9 AM–5 PM Eastern Time. This does not reserve a pilot place or confirm an appointment.';
    box.append(title,detail);form.replaceChildren(box);box.focus();pending=null;
   }catch(error){
    status.textContent=(error.name==='TimeoutError'?'The connection timed out.':error.message)+' Your details are kept on this page. Retry to confirm submission.';
