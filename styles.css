@@ -6,3 +6,6 @@
 @media(max-width:600px){.shell{width:min(100% - 28px,1160px)}.hero{min-height:auto;padding:45px 0 60px}.hero h1{font-size:42px}.lead{font-size:17px}.heroActions{flex-direction:column}.heroActions .button{width:100%}.trustRow{display:grid}.serviceGrid,.steps,.metricGrid,.fieldRow,.footerGrid{grid-template-columns:1fr}.section{padding:65px 0}.section h2,.ctaSection h2{font-size:34px}.chatBody{padding:16px}.logoInner{padding:25px 0}.logoInner span{width:100%;text-align:center}.footerBottom{flex-direction:column;gap:10px}.contactForm{padding:20px}}
 
 .textIcon{display:inline-flex;align-items:center;justify-content:center;line-height:1;font-weight:800}
+
+/* Founding-customer offer: keep the renewal price as prominent as the introductory terms. */
+.pilotPricing{grid-template-columns:1fr;max-width:640px;margin:0 auto}.pilotPricing .featured{transform:none}.pricePeriod{font-size:20px;font-weight:600}.priceCard .pilotTerms,.priceCard .pilotSetup{font-size:16px;line-height:1.6;color:var(--ink);margin:8px 0}.pilotPricing .button{margin-top:24px}.priceCard .pilotNote{font-size:13px;line-height:1.6;text-align:center;margin-bottom:0}.pilotPricing .popular{white-space:nowrap}
